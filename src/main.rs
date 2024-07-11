@@ -14,11 +14,12 @@ fn main() {
         Ok(_) => {
             process::exit(0);
         },
-        Err(_) => {
+        Err(msg) => {
             writeln!(
                 &mut stderr,
-                "{}",
-                "Error encountered while running GrepRS."
+                "{} {}",
+                "Error encountered while running GrepRS.",
+                msg
             ).expect("Could not write to stderr.");
 
             process::exit(1);
