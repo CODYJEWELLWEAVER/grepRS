@@ -32,9 +32,9 @@ pub fn matcher(config: Config) {
 /// Constructs regular expression from options.
 fn build_regex(options: &Options) -> Regex {
     let combined_patterns = options.patterns.join("|");
-    let regex_string = format!(r"{}(?g)", combined_patterns);
+    let regex_string = format!(r"{}", combined_patterns);
 
-    Regex::new(regex_string.as_str()).unwrap() // fails if regex can't be built
+    Regex::new(regex_string.as_str()).expect("Cannot build regex!") // fails if regex can't be built
 }
 
 fn search_source(source: String) -> String {
