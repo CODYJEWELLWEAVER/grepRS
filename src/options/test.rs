@@ -11,7 +11,7 @@ fn default() {
 }
 
 #[test]
-fn parse_explict_patterns_shorthand() {
+fn parse_explicit_patterns_shorthand() {
     let arg = String::from("-e=dew");
     let expected_patterns = vec!("dew");
     let mut options = Options::default();
@@ -20,7 +20,7 @@ fn parse_explict_patterns_shorthand() {
 }
 
 #[test]
-fn parse_explict_patterns() {
+fn parse_explicit_patterns() {
     let arg = String::from("--regexp=\"dew\nis\"");
     let expected_patterns = vec!("dew", "is");
     let mut options: Options = Options::default();

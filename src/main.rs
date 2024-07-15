@@ -4,11 +4,11 @@ extern crate greprs;
 
 use std::env;
 use std::process;
-use std::io::Write;
+use std::io::{Write, stderr};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let mut stderr = std::io::stderr();
+    let mut stderr = stderr();
 
     match run(args) {
         Ok(_) => {

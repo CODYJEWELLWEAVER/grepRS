@@ -5,6 +5,7 @@ use crate::options;
 use std::error::Error;
 use regex::Regex;
 use options::Options;
+use std::io::stdin;
 
 /// Represents information about current search parameters.
 /// #### Params:
@@ -27,6 +28,7 @@ impl Config {
 
         // filter options and source candidates
         for arg in preprocessed_args {
+            println!("{}", arg);
             if arg.starts_with("-") {
                 options.parse_option(arg);
             }
@@ -48,6 +50,11 @@ impl Config {
             }
         }
 
+        // Accepts input from stdin
+        if source_candidates.len() == 0 {
+            
+        }
+
         Ok(Config { sources: source_candidates, options })
     }
 
@@ -59,14 +66,16 @@ impl Config {
         let options_needs_value = Regex::new(r"^-[e]$")?;
 
         let args_len = args.len();
-        let mut i = 0;
+        let mut i = 1; // excludes target arg
         while i < args_len {
             let arg: String = args[i].clone();
             if options_needs_value.is_match(&arg) {
                 if i + 1 >= args_len {
                     return Err(Box::from(format!("Option: {}, requires a value!", arg)));
                 }
-                processed_args.push(arg + "=" + &args[i+1]); // Associate next arg as the value.
+
+                // Associate next arg as the value.
+                processed_args.push(arg + "=" + &args[i+1]);
                 i += 1;
             }
             else {
