@@ -1,11 +1,12 @@
 mod test;
 
-use crate::{options, source};
+use crate::options;
+use crate::source;
 
 use std::error::Error;
-use std::env::var_os;
 use regex::Regex;
 use options::Options;
+use source::Source;
 
 /// Represents information about current search parameters.
 /// #### Params:
@@ -14,19 +15,18 @@ use options::Options;
 /// *   options - optional run parameters, see Options.
 #[derive(Clone)]
 pub struct Config {
-    pub source_paths: Vec<String>,
+    pub sources: Vec<Source>,
     pub options: Options,
 }
 
 impl Config {
     /// Constructs new search configuration from command line arguments.
     pub fn new(args: Vec<String>) -> Result<Config, Box<dyn Error>> {
-        let (sources, option_args) = Self::preprocess_args(args)?;
+        let (source_args, option_args) = Self::preprocess_args(args)?;
 
-        // TODO: Move Options into Config
         let mut options: Options = Options::default();
 
-        if sources.len() > 1 {
+        if source_args.len() > 1 {
             options.file_prefix = true;
         }
 
@@ -34,7 +34,11 @@ impl Config {
             options.parse_option(arg)?;
         }
 
-        Ok(Config{ source_paths: sources, options })
+        let sources = source_args.into_iter().map(|path| {
+            Source::new(path)
+        }).collect();
+
+        Ok(Config { sources, options })
     }
 
     /// Associates option arguments with their respective values.

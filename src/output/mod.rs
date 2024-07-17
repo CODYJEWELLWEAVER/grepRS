@@ -1,12 +1,12 @@
-use crate::config;
-use crate::source::Source;
+use crate::source;
+use crate::options;
 
-use config::Config;
+use source::Source;
+use options::Options;
 use regex::Matches;
 use std::iter::zip;
 
-pub fn display(config: &Config, source: &Source, source_matches: Vec<Matches>) {
-    let options = &config.options;
+pub fn display(options: &Options, source: &Source, source_matches: Vec<Matches>) {
 
     let source_lines = source.content.split("\n");
     let line_matches = zip(source_lines, source_matches);

@@ -5,8 +5,8 @@ mod options;
 mod output;
 
 use config::Config;
+use regex::{Regex, Matches};
 use std::error::Error;
-use source::Source;
 
 /// Runs search with command line arguments.
 /// #### Param:
@@ -17,15 +17,17 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     }
 
     let config: Config = Config::new(args)?;
-    let regex = matcher::build_regex(&config)?;
+    let regex: Regex = matcher::build_regex(&config)?;
 
-    for path in &config.source_paths {
-        let mut source = Source::new(path.to_string());
-        source.load_content()?;
+    for mut source in config.sources {
+        source.read_content()?;
 
-        let matches = matcher::search_lines(&regex, &source.content);
+        let matches: Vec<Matches> = matcher::search_lines(
+            &regex,
+            &source.content
+        );
 
-        output::display(&config, &source, matches);
+        output::display(&config.options, &source, matches);
     }
 
     return Ok(());

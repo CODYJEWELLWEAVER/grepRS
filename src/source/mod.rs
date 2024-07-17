@@ -18,7 +18,7 @@ impl Source {
     }
 
     /// Load content of source.
-    pub fn load_content (&mut self) -> Result<(), Box<dyn Error>>{
+    pub fn read_content (&mut self) -> Result<(), Box<dyn Error>>{
         match self.path.as_str() {
             "" => {
                 stdin().read_line(&mut self.content)?;

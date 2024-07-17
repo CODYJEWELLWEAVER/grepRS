@@ -5,7 +5,7 @@ use super::Config;
 fn single_pattern_and_file() {
     let args = vec!(String::from("./target"), String::from("dew"), String::from("../../res/test/haiku.txt"));
     let config = Config::new(args).unwrap();
-    assert_eq!(config.source_paths.len(), 1);
+    assert_eq!(config.sources.len(), 1);
     assert_eq!(config.options.patterns, vec!(String::from("dew")));
 }
 
@@ -13,7 +13,7 @@ fn single_pattern_and_file() {
 fn explicit_pattern_and_file() {
     let args = vec!(String::from("./target"), String::from("-e"), String::from("dew"), String::from("../../res/test/haiku.txt"));
     let config = Config::new(args).unwrap();
-    assert_eq!(config.source_paths.len(), 1);
+    assert_eq!(config.sources.len(), 1);
     assert_eq!(config.options.patterns, vec!(String::from("dew")));
 }
 
@@ -35,7 +35,7 @@ fn explicit_patterns_quoted_newline() {
 fn patterns_newline_separators_single_file() {
     let args = vec!(String::from("./target"), String::from("dew\nis"), String::from("../../res/test/haiku.txt"));
     let config = Config::new(args).unwrap();
-    assert_eq!(config.source_paths.len(), 1);
+    assert_eq!(config.sources.len(), 1);
     assert_eq!(config.options.patterns, vec!(String::from("dew"), String::from("is")));
 }
 
@@ -43,6 +43,6 @@ fn patterns_newline_separators_single_file() {
 fn patterns_quoted_newline_separators_single_file() {
     let args = vec!(String::from("./target"), String::from("\"dew\nis\""), String::from("../../res/test/haiku.txt"));
     let config = Config::new(args).unwrap();
-    assert_eq!(config.source_paths.len(), 1);
+    assert_eq!(config.sources.len(), 1);
     assert_eq!(config.options.patterns, vec!(String::from("dew"), String::from("is")));
 }
