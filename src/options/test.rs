@@ -12,7 +12,10 @@ fn default() {
         ignore_case: false,
         invert_match: false,
     };
-    assert_eq!(default_options, expected_options);
+    assert_eq!(default_options.patterns, expected_options.patterns);
+    assert_eq!(default_options.file_prefix, expected_options.file_prefix);
+    assert_eq!(default_options.ignore_case, expected_options.ignore_case);
+    assert_eq!(default_options.invert_match, expected_options.invert_match);
 }
 
 #[test]
