@@ -9,11 +9,7 @@ use options::Options;
 use source::Source;
 
 /// Represents information about current search parameters.
-/// #### Params:
-/// *   patterns - patterns to search for.
-/// *   files - files to search in.
-/// *   options - optional run parameters, see Options.
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Config {
     pub sources: Vec<Source>,
     pub options: Options,
@@ -22,7 +18,7 @@ pub struct Config {
 impl Config {
     /// Constructs new search configuration from command line arguments.
     pub fn new(args: Vec<String>) -> Result<Config, Box<dyn Error>> {
-        let (source_args, option_args) = Self::preprocess_args(args)?;
+        let (mut source_args, option_args) = Self::preprocess_args(args)?;
 
         let mut options: Options = Options::default();
 
@@ -34,6 +30,11 @@ impl Config {
             options.parse_option(arg)?;
         }
 
+        if source_args.is_empty() {
+            // read from stdin if no source argument given.
+            source_args.push(String::from("-"));
+        }
+
         let sources = source_args.into_iter().map(|path| {
             Source::new(path)
         }).collect();
@@ -41,8 +42,9 @@ impl Config {
         Ok(Config { sources, options })
     }
 
-    /// Associates option arguments with their respective values.
-    /// Returns a tuple with source/pattern args in the first vector
+    /// Associates option arguments with their respective values and separates
+    /// source candidates from option arguments.
+    /// Returns a tuple with source args in the first vector
     /// and option args in the second.
     fn preprocess_args(args: Vec<String>) -> Result<(Vec<String>, Vec<String>), Box<dyn Error>> {
         let mut source_candidates = Vec::new();
@@ -71,6 +73,11 @@ impl Config {
                 // Associate next arg as the value.
                 options.push(arg + "=" + &args[i+1]);
                 i += 1;
+            }
+            else if arg.len() > 1 && arg.starts_with("-") {
+                // checks length to avoid detecting
+                // stdin path "-" as an option
+                options.push(arg);
             }
             else {
                 source_candidates.push(arg);

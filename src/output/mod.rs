@@ -6,8 +6,8 @@ use options::Options;
 use regex::Matches;
 use std::iter::zip;
 
+/// Displays results of searching a [Source].
 pub fn display(options: &Options, source: &Source, source_matches: Vec<Matches>) {
-
     let source_lines = source.content.split("\n");
     let line_matches = zip(source_lines, source_matches);
 
@@ -17,7 +17,7 @@ pub fn display(options: &Options, source: &Source, source_matches: Vec<Matches>)
             let mut output = String::new();
 
             if options.file_prefix {
-                let prefix = String::from(&source.path) + ": ";
+                let prefix = String::from(&source.path) + ":\t";
                 output.push_str(prefix.as_str());
             }
 
@@ -30,4 +30,6 @@ pub fn display(options: &Options, source: &Source, source_matches: Vec<Matches>)
             print!("{}", output);
         }
     }
+
+    println!();
 }

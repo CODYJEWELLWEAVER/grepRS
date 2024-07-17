@@ -18,7 +18,7 @@ fn main() {
             writeln!(
                 &mut stderr,
                 "{} {}",
-                "Error encountered while running GrepRS.",
+                "Error encountered while running grepRS.",
                 msg
             ).expect("Could not write to stderr.");
 
