@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
+        "COLORTERM",
         "consts",
         "greprs",
+        "peekable",
         "preprocess"
     ]
 }

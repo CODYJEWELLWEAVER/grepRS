@@ -1,52 +1,27 @@
 use crate::config;
-use crate::options;
 
 use config::Config;
-use options::Options;
+use regex::Matches;
 use regex::Regex;
-use std::io::{stdin, Read};
 use std::error::Error;
-use std::fs::{File};
-
-
-/// Runs search for patterns in sources.
-pub fn search_sources(config: Config) -> Result<(), Box<dyn Error>> {
-    let sources = config.sources;
-    let options = config.options;
-
-    let regex = build_regex(&options);
-
-    if sources.len() == 0 {
-        let mut buffer = String::new();
-        stdin().read_line(&mut buffer)?;
-
-    }
-    else {
-        for source_path in sources {
-            // open file
-            let mut content = String::new();
-            let mut source_file = File::open(source_path)?;
-            source_file.read_to_string(&mut content)?;
-
-            // search for matches
-
-            // markup with color
-
-            // annotate with files names for multi-file searches.
-        }
-    }
-
-    Ok(())
-}
 
 /// Constructs regular expression from options.
-fn build_regex(options: &Options) -> Regex {
-    let combined_patterns = options.patterns.join("|");
+pub fn build_regex(config: &Config) -> Result<Regex, Box<dyn Error>> {
+    let combined_patterns = config.options.patterns.join("|");
     let regex_string = format!(r"{}", combined_patterns);
 
-    Regex::new(regex_string.as_str()).expect("Cannot build regex!")
+    let regex = Regex::new(regex_string.as_str())?;
+    Ok(regex)
 }
 
-fn search_source(source: String) -> String {
-    String::from("")
+/// Searches content of a source line by line.
+pub fn search_lines<'a>(regex: &'a Regex, content: &'a String) -> Vec<Matches<'a, 'a>> {
+    let mut matches: Vec<Matches> = Vec::new();
+
+    let lines = content.split("\n");
+    for line in lines {
+        matches.push(regex.find_iter(&line));
+    }
+
+    matches
 }

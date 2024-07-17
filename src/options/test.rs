@@ -1,11 +1,14 @@
 #![allow(unused_imports)]
+#![allow(unused_must_use)]
 use super::*;
 
 #[test]
 fn default() {
     let default_options = Options::default();
     let expected_options = Options {
-        patterns: vec!(),
+        patterns: Vec::new(),
+        color_output: true, // ignore for testing
+        file_prefix: false,
     };
     assert_eq!(default_options, expected_options);
 }
