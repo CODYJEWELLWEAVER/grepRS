@@ -34,24 +34,14 @@ pub fn search_lines<'a>(regex: &'a Regex, content: &'a String) -> Vec<Matches<'a
 /// Combines patterns into a single regex
 fn build_pattern(options: &Options) -> String {
     let mut patterns = if options.line_match {
-        let patterns = options.patterns.clone()
-            .into_iter()
-            .map(|pattern| {
-                String::from("^(") + &pattern + ")$"
-            });
-
-        patterns.collect::<Vec<String>>()
+        apply_line_matching(&options.patterns)
     }
     else {
         options.patterns.clone()
     };
 
-    patterns = if options.word_match {
-        patterns.into_iter()
-            .map(|pattern| {
-                String::from(r"\b") + &pattern + r"\b"
-            })
-            .collect::<Vec<String>>()
+    patterns = if options.word_match && !options.line_match {
+        apply_word_matching(&patterns)
     }
     else {
         patterns
@@ -69,4 +59,23 @@ fn build_flags(options: &Options) -> String {
     }
 
     flags
+}
+
+/// Maps patterns to new patterns that only match entire lines.
+fn apply_line_matching(patterns: &Vec<String>) -> Vec<String> {
+    patterns.clone()
+        .into_iter()
+        .map(|pattern| {
+            String::from("^(") + &pattern + ")$"
+        })
+        .collect::<Vec<String>>()
+}
+
+/// Maps patterns to patterns that only match whole words.
+fn apply_word_matching(patterns: &Vec<String>) -> Vec<String> {
+    patterns.into_iter()
+        .map(|pattern| {
+            String::from(r"\b") + &pattern + r"\b"
+        })
+        .collect::<Vec<String>>()
 }
