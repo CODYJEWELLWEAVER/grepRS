@@ -33,7 +33,7 @@ pub fn search_lines<'a>(regex: &'a Regex, content: &'a String) -> Vec<Matches<'a
 
 /// Combines patterns into a single regex
 fn build_pattern(options: &Options) -> String {
-    let patterns = if options.line_match {
+    let mut patterns = if options.line_match {
         let patterns = options.patterns.clone()
             .into_iter()
             .map(|pattern| {
@@ -44,6 +44,17 @@ fn build_pattern(options: &Options) -> String {
     }
     else {
         options.patterns.clone()
+    };
+
+    patterns = if options.word_match {
+        patterns.into_iter()
+            .map(|pattern| {
+                String::from(r"\b") + &pattern + r"\b"
+            })
+            .collect::<Vec<String>>()
+    }
+    else {
+        patterns
     };
 
     patterns.join("|")

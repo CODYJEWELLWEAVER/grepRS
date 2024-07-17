@@ -16,6 +16,7 @@ pub struct Options {
     pub ignore_case: bool,
     pub invert_match: bool,
     pub line_match: bool,
+    pub word_match: bool,
 }
 
 impl Options {
@@ -28,6 +29,7 @@ impl Options {
             ignore_case: false,
             invert_match: false,
             line_match: false,
+            word_match: false,
         }
     }
 
@@ -55,6 +57,9 @@ impl Options {
         }
         else if option == "-x" || option == "--line-regexp" {
             self.line_match = true;
+        }
+        else if option == "-w" || option == "--word-regexp" {
+            self.word_match = true;
         }
         else {
             panic!("Invalid option: {}", option);
