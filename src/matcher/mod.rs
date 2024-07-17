@@ -1,18 +1,16 @@
 mod test;
 
-use crate::config;
 use crate::options;
 
-use config::Config;
 use options::Options;
 use regex::Matches;
 use regex::Regex;
 use std::error::Error;
 
 /// Constructs regular expression from options.
-pub fn build_regex(config: &Config) -> Result<Regex, Box<dyn Error>> {
-    let patterns = config.options.patterns.join("|");
-    let flags = build_flags(&config.options);
+pub fn build_regex(options: &Options) -> Result<Regex, Box<dyn Error>> {
+    let patterns = build_pattern(options);
+    let flags = build_flags(options);
 
     let regex_string = format!(r"{}{}", patterns, flags);
 
@@ -31,6 +29,24 @@ pub fn search_lines<'a>(regex: &'a Regex, content: &'a String) -> Vec<Matches<'a
     }
 
     matches
+}
+
+/// Combines patterns into a single regex
+fn build_pattern(options: &Options) -> String {
+    let patterns = if options.line_match {
+        let patterns = options.patterns.clone()
+            .into_iter()
+            .map(|pattern| {
+                String::from("^(") + &pattern + ")$"
+            });
+
+        patterns.collect::<Vec<String>>()
+    }
+    else {
+        options.patterns.clone()
+    };
+
+    patterns.join("|")
 }
 
 /// Combines flags for regex.

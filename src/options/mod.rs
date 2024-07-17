@@ -15,6 +15,7 @@ pub struct Options {
     pub file_prefix: bool,
     pub ignore_case: bool,
     pub invert_match: bool,
+    pub line_match: bool,
 }
 
 impl Options {
@@ -26,6 +27,7 @@ impl Options {
             file_prefix: false,
             ignore_case: false,
             invert_match: false,
+            line_match: false,
         }
     }
 
@@ -50,6 +52,9 @@ impl Options {
         }
         else if option == "-v" || option == "--invert-match" {
             self.invert_match = true;
+        }
+        else if option == "-x" || option == "--line-regexp" {
+            self.line_match = true;
         }
         else {
             panic!("Invalid option: {}", option);

@@ -32,6 +32,7 @@ impl Config {
 
         if source_args.is_empty() {
             // read from stdin if no source argument given.
+            println!("Empty sources!");
             source_args.push(String::from("-"));
         }
 

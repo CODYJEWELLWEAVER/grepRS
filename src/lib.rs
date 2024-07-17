@@ -19,7 +19,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     }
 
     let config: Config = Config::new(args)?;
-    let regex: Regex = matcher::build_regex(&config)?;
+    let regex: Regex = matcher::build_regex(&config.options)?;
 
     for mut source in config.sources {
         if let Err(msg) = source.read_content() {

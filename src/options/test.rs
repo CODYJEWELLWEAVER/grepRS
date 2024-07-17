@@ -11,11 +11,13 @@ fn default() {
         file_prefix: false,
         ignore_case: false,
         invert_match: false,
+        line_match: false,
     };
     assert_eq!(default_options.patterns, expected_options.patterns);
     assert_eq!(default_options.file_prefix, expected_options.file_prefix);
     assert_eq!(default_options.ignore_case, expected_options.ignore_case);
     assert_eq!(default_options.invert_match, expected_options.invert_match);
+    assert_eq!(default_options.line_match, expected_options.line_match);
 }
 
 #[test]
@@ -115,4 +117,17 @@ fn parse_invert_match() {
     let mut options = Options::default();
     options.parse_option(arg);
     assert_eq!(options.invert_match, true);
+}
+
+#[test]
+fn parse_line_match() {
+    let arg = String::from("-x");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.line_match, true);
+
+    let arg = String::from("--line-regexp");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.line_match, true);
 }
