@@ -10,6 +10,7 @@ fn default() {
         color_output: true, // ignored for testing purposes
         file_prefix: false,
         ignore_case: false,
+        invert_match: false,
     };
     assert_eq!(default_options, expected_options);
 }
@@ -98,4 +99,17 @@ fn parse_no_ignore_case() {
     options.ignore_case = true;
     options.parse_option(arg);
     assert_eq!(options.ignore_case, false);
+}
+
+#[test]
+fn parse_invert_match() {
+    let arg = String::from("-v");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.invert_match, true);
+
+    let arg = String::from("--invert-match");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.invert_match, true);
 }

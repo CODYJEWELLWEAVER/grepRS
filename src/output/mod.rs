@@ -13,23 +13,32 @@ pub fn display(options: &Options, source: &Source, source_matches: Vec<Matches>)
 
     for (line, matches) in line_matches {
         let mut matches = matches.peekable();
-        if matches.peek().is_some() {
-            let mut output = String::new();
 
-            if options.file_prefix {
-                let prefix = String::from(&source.path) + ":\t";
-                output.push_str(prefix.as_str());
-            }
-
-            output.push_str(line);
-
-            if !output.ends_with("\n") {
-                output.push_str("\n");
-            }
-
-            print!("{}", output);
+        if matches.peek().is_some() && !options.invert_match {
+            display_line(options, source, line);
+        }
+        else if matches.peek().is_none() && options.invert_match {
+            display_line(options, source, line);
         }
     }
 
     println!();
+}
+
+/// Displays line of source.
+fn display_line(options: &Options, source: &Source, line: &str) {
+    let mut output = String::new();
+
+    if options.file_prefix {
+        let prefix = String::from(&source.path) + ":\t";
+        output.push_str(prefix.as_str());
+    }
+
+    output.push_str(line);
+
+    if !output.ends_with("\n") {
+        output.push_str("\n");
+    }
+
+    print!("{}", output);
 }

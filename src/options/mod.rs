@@ -14,6 +14,7 @@ pub struct Options {
     pub color_output: bool,
     pub file_prefix: bool,
     pub ignore_case: bool,
+    pub invert_match: bool,
 }
 
 impl Options {
@@ -24,6 +25,7 @@ impl Options {
             color_output: Self::supports_color(),
             file_prefix: false,
             ignore_case: false,
+            invert_match: false,
         }
     }
 
@@ -45,6 +47,9 @@ impl Options {
         else if option == "-i" || option == "-y" ||
                 option == "--ignore-case" || option == "--no-ignore-case" {
             self.handle_ignore_case(option);
+        }
+        else if option == "-v" || option == "--invert-match" {
+            self.invert_match = true;
         }
         else {
             panic!("Invalid option: {}", option);
