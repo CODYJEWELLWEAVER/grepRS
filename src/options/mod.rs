@@ -129,8 +129,7 @@ impl Options {
         }
     }
 
-    /// Check if running in a terminal that supports color
-    /// ANSI color.
+    /// Check if running in a environment that supports color output.
     // TODO: Add support for more environments.
     fn supports_color() -> bool {
         match var_os("COLORTERM") {
@@ -149,6 +148,9 @@ impl Options {
         let split_arg = arg.split_once("=");
         if let Some((option, value)) = split_arg {
             (option, value)
+        }
+        else if !arg.starts_with("--") && arg.len() > 2 {
+            (&arg[0..2], &arg[2..])
         }
         else {
             (arg.as_str(), "")

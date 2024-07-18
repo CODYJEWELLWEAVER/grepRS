@@ -73,7 +73,8 @@ fn apply_line_matching(patterns: &Vec<String>) -> Vec<String> {
 
 /// Maps patterns to patterns that only match whole words.
 fn apply_word_matching(patterns: &Vec<String>) -> Vec<String> {
-    patterns.into_iter()
+    patterns
+        .into_iter()
         .map(|pattern| {
             String::from(r"\b") + &pattern + r"\b"
         })

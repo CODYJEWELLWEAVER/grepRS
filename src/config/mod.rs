@@ -31,8 +31,6 @@ impl Config {
         }
 
         if source_args.is_empty() {
-            // read from stdin if no source argument given.
-            println!("Empty sources!");
             source_args.push(String::from("-"));
         }
 
@@ -52,7 +50,7 @@ impl Config {
         let mut options = Vec::new();
         // Checks if an option needs a value
         // e.g. '-e', so that the following value can be associated with it.
-        let options_needs_value = Regex::new(r"^-[ef]$")?;
+        let option_needs_value = Regex::new(r"^-[ef]")?;
 
         // tracks if at least one pattern has been given explicitly
         let mut explicit_pattern: bool = false;
@@ -62,18 +60,28 @@ impl Config {
         while i < args_len {
             let arg: String = args[i].clone();
 
-            if options_needs_value.is_match(&arg) {
-                if i + 1 >= args_len {
-                    return Err(Box::from(format!("Option: {}, requires a value!", arg)));
+            if option_needs_value.is_match(&arg) {
+
+                // Check if option arg needs to be associated with a value
+                // e.g. args = {"./target", "-e", "dew"}
+                if arg.len() == 2 {
+                    if i + 1 >= args_len {
+                        return Err(Box::from(format!("Option: {}, requires a value!", arg)));
+                    }
+
+                    // Associate next arg as the value.
+                    options.push(String::from(&arg) + &args[i+1]);
+                    i += 1;
+                }
+                else {
+                    // if option already has a value associated with it
+                    // e.g. args = {"./target", "-edew"}
+                    options.push(String::from(&arg));
                 }
 
-                if arg == "-e" || arg == "--regexp" {
+                if &arg[..2] == "-e" || &arg == "--regexp" {
                     explicit_pattern = true;
                 }
-
-                // Associate next arg as the value.
-                options.push(arg + "=" + &args[i+1]);
-                i += 1;
             }
             else if arg.len() > 1 && arg.starts_with("-") {
                 // checks length to avoid detecting
@@ -90,7 +98,7 @@ impl Config {
         if !explicit_pattern {
             // sets first source candidate as pattern if no
             // explicit pattern is set
-            let pattern_arg: String = String::from("-e=") + &source_candidates.remove(0);
+            let pattern_arg: String = String::from("--regexp=") + &source_candidates.remove(0);
             options.push(pattern_arg);
         }
 

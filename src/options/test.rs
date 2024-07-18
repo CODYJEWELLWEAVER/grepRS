@@ -23,17 +23,20 @@ fn default() {
 }
 
 #[test]
-fn parse_explicit_patterns_shorthand() {
-    let arg = String::from("-e=dew");
-    let expected_patterns = vec!("dew");
+fn parse_explicit_patterns() {
+    let arg = String::from("--regexp=\"dew\nis\"");
+    let expected_patterns = vec!("dew", "is");
     let mut options = Options::default();
     options.parse_option(arg);
     assert_eq!(options.patterns, expected_patterns);
-}
 
-#[test]
-fn parse_explicit_patterns() {
-    let arg = String::from("--regexp=\"dew\nis\"");
+    let arg = String::from("-e=\"dew\nis\"");
+    let expected_patterns = vec!("dew", "is");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.patterns, expected_patterns);
+
+    let arg = String::from("-e\"dew\nis\"");
     let expected_patterns = vec!("dew", "is");
     let mut options = Options::default();
     options.parse_option(arg);
@@ -71,6 +74,11 @@ fn parse_with_filename() {
 #[test]
 fn read_pattern_file() {
     let arg = String::from("-f=res/test/patterns.txt");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.patterns, vec!(String::from("dew"), String::from("s")));
+
+    let arg = String::from("-fres/test/patterns.txt");
     let mut options = Options::default();
     options.parse_option(arg);
     assert_eq!(options.patterns, vec!(String::from("dew"), String::from("s")));

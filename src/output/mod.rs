@@ -16,6 +16,8 @@ pub struct OutputBuffer {
 }
 
 impl OutputBuffer {
+    /// Creates new instance of OutputBuffer with default
+    /// buffer size and stdout as destination.
     pub fn new() -> OutputBuffer {
         OutputBuffer {
             buffer: String::with_capacity(BUFFER_SIZE),
@@ -23,7 +25,8 @@ impl OutputBuffer {
         }
     }
 
-    /// Displays results of searching a [Source].
+    /// Writes results of searching a [Source] to the
+    /// internal output buffer.
     pub fn write_to_buffer(
         &mut self,
         options: &Options,
@@ -45,10 +48,12 @@ impl OutputBuffer {
         }
     }
 
+    /// Writes separator to buffer between
     pub fn write_separator(&mut self) {
         self.buffer.push('\n');
     }
 
+    /// Writes buffer to output and flush.
     pub fn write_and_flush(&mut self) {
         write!(
             self.out,

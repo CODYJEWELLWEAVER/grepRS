@@ -64,3 +64,11 @@ fn single_pattern_stdin() {
     assert_eq!(config.sources.len(), 1);
     assert_eq!(config.options.patterns, vec!(String::from("dew")));
 }
+
+#[test]
+fn single_pattern_no_space() {
+    let args = vec!(String::from("./target"), String::from("-edew"));
+    let config = Config::new(args).unwrap();
+    assert_eq!(config.sources.len(), 1);
+    assert_eq!(config.options.patterns, vec!(String::from("dew")));
+}

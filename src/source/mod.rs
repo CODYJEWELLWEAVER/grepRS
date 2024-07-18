@@ -3,7 +3,7 @@ mod test;
 use std::io::{stdin, Read};
 use std::fs::File;
 
-/// Holds path and content of source. An empty path represents stdin.
+/// Holds path and content of source. A path of "-" represents stdin.
 /// Used for representing content sources that will be searched
 /// and pattern sources, when reading patterns from a file.
 /// See Options::handle_pattern_file() for latter usage and Config::new()

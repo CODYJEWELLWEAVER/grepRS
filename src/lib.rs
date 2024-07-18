@@ -24,6 +24,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     let regex: Regex = matcher::build_regex(&config.options)?;
     let mut output_buffer = OutputBuffer::new();
 
+    // used to detect when a source separator should be printed
     let last_source_idx = config.sources.len() - 1;
     let last_source: &Source = &config.sources[last_source_idx].clone();
 
