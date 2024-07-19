@@ -20,6 +20,6 @@ fn single_pattern_single_source() {
 
     assert_eq!(config, Config { sources: vec!(expected_source), options: expected_options });
 
-    config.sources[0].read_content().unwrap();
-    assert_eq!(config.sources[0].content, String::from("This world of dew,\nis a world of dew,\nand yet, and yet."));
+    config.sources[0].read_data().unwrap();
+    assert_eq!(config.sources[0].data, String::from("This world of dew,\nis a world of dew,\nand yet, and yet."));
 }

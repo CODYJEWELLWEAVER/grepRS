@@ -16,7 +16,7 @@
 //! has not been thoroughly tested at this point but should largely work. Color output, advanced output
 //! options, and support for searching additional formats is on my radar next. Color output and thorough testing
 //! of complex usage are next on my todo list.
-
+//!
 //! ## BASIC USAGE
 //!
 //! ### **Basic**
