@@ -7,25 +7,28 @@ use regex::Matches;
 use std::iter::zip;
 use std::io::{stdout, Write};
 
-const BUFFER_SIZE: usize = 2048;
+/// Default output buffer size.
+const BUFFER_SIZE: usize = 4096;
 
 /// Contains methods for buffering and writing output.
 pub struct OutputBuffer {
-    pub buffer: String,
-    pub out: Box<dyn Write>,
+    /// Internal buffer for output content.
+    buffer: String,
+    /// A writable destination for content to be written to.
+    destination: Box<dyn Write>,
 }
 
 impl OutputBuffer {
     /// Creates new instance of OutputBuffer with default
     /// buffer size and stdout as destination.
-    pub fn new() -> OutputBuffer {
+    pub fn default() -> OutputBuffer {
         OutputBuffer {
             buffer: String::with_capacity(BUFFER_SIZE),
-            out: Box::from(stdout()),
+            destination: Box::from(stdout()),
         }
     }
 
-    /// Writes results of searching a [Source] to the
+    /// Writes results of search on a [Source] to the
     /// internal output buffer.
     pub fn write_to_buffer(
         &mut self,
@@ -33,7 +36,7 @@ impl OutputBuffer {
         source: &Source,
         source_matches: Vec<Matches>
     ) {
-        let source_lines = source.content.split("\n");
+        let source_lines = source.data.split("\n");
         let line_matches = zip(source_lines, source_matches);
 
         for (line, matches) in line_matches {
@@ -46,29 +49,46 @@ impl OutputBuffer {
                 self.write_line(options, source, line);
             }
         }
+
+        if self.buffer.len() >= BUFFER_SIZE {
+            self.write_and_flush();
+        }
     }
 
-    /// Writes separator to buffer between
+    /// Writes newline to buffer to separate source results.
     pub fn write_separator(&mut self) {
         self.buffer.push('\n');
+
+        if self.buffer.len() >= BUFFER_SIZE {
+            self.write_and_flush();
+        }
     }
 
-    /// Writes buffer to output and flush.
+    /// Writes buffer to destination and flushes.
     pub fn write_and_flush(&mut self) {
         write!(
-            self.out,
+            self.destination,
             "{}",
             self.buffer
         ).expect("grepRS: Could not write to stdout!");
 
-        self.out.flush()
+        self.destination.flush()
             .expect("grepRS: Could not flush buffer!");
+
+        self.buffer = String::with_capacity(BUFFER_SIZE);
     }
 
-    // writes line to buffer
+    /// Writes a single line to buffer. If `line` doesn't end
+    /// with a newline char a newline will be added to the buffer.
     fn write_line(&mut self, options: &Options, source: &Source, line: &str) {
         if options.file_prefix {
-            let prefix = String::from(&source.path) + ":\t";
+            let path = if &source.path != "-" {
+                &source.path
+            } else {
+                "(standard input)"
+            };
+
+            let prefix = String::from(path) + ":\t";
             self.buffer.push_str(prefix.as_str());
         }
 

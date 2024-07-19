@@ -8,19 +8,43 @@ use std::env::var_os;
 use std::io::{stderr, Write};
 
 /// #### Options for a run of GrepRS.
+///
+/// See [parse_option](Options::parse_option) for logic used to parse options
+/// from command line arguments.
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Options {
+    /// Patterns to find matches for.
     pub patterns: Vec<String>,
+    /// If output should use color. Defaults to `true` if the current environment indicates
+    /// color output support.
     pub color_output: bool,
+    /// If output should be prefixed with the path name.
+    /// Uses `(standard input)` as a prefix for stdin.
+    /// Defaults to `true` for multiple source executions, otherwise `false`.
     pub file_prefix: bool,
+    /// If pattern matching should be case sensitive. Defaults to `true`.
     pub ignore_case: bool,
+    /// If matching logic should be inverted. i.e. non-matching lines will match. Defaults to `false`.
     pub invert_match: bool,
+    /// If `true`, patterns can only match with an entire line. Defaults to `false`.
     pub line_match: bool,
+    /// If `true`, a pattern can only match areas surrounded by non-word bytes. Defaults to `false`.
     pub word_match: bool,
 }
 
 impl Options {
     /// Returns default Options.
+    /// ```text
+    /// Options {
+    ///     patterns: Vec::new(),
+    ///     color_output: Self::supports_color(),
+    ///     file_prefix: false,
+    ///     ignore_case: false,
+    ///     invert_match: false,
+    ///     line_match: false,
+    ///     word_match: false,
+    /// }
+    /// ```
     pub fn default() -> Options {
         Options {
             patterns: Vec::new(),
@@ -68,8 +92,8 @@ impl Options {
         Ok(())
     }
 
-    /// Adds pattern(s) from explicit pattern argument.
-    /// **value** is the pattern string
+    /// Adds pattern(s) from a pattern argument. Each string separated by a
+    /// newline is considered as a unique pattern.
     fn handle_pattern(&mut self, patterns: &str) {
         let mut patterns = patterns;
         if patterns.starts_with("\"") && patterns.ends_with("\"") {
@@ -82,11 +106,11 @@ impl Options {
         }
     }
 
-    /// Reads patterns from a file, or stdin. Prints message to stderr if
+    /// Reads pattern(s) from a file, or stdin. Prints message to stderr if
     /// an io error is encountered.
     fn handle_pattern_file(&mut self, path: &str) {
         let mut pattern_source: Source = Source::new(path.to_string());
-        if let Err(msg) = pattern_source.read_content(){
+        if let Err(msg) = pattern_source.read_data(){
             writeln!(
                 &mut stderr(),
                 "{} {}",
@@ -95,16 +119,16 @@ impl Options {
             ).expect("Could not write to stderr.");
         };
 
-        let patterns = pattern_source.content;
+        let patterns = pattern_source.data;
 
         for pattern in patterns.split("\n") {
             self.patterns.push(String::from(pattern));
         }
     }
 
-    /// Updates self.file_prefix. This function will only ever
-    /// be called with one of "-h" "--no-filename", "-H", or
-    /// "--with-filename" as **option**.
+    /// Sets `file_prefix`. This function has no effect if not
+    /// called with one of `-h` `--no-filename`, `-H`, or
+    /// `--with-filename` as `option`.
     fn handle_prefix(&mut self, option: &str) {
         match option {
             "-h" | "--no-filename" => {
@@ -116,8 +140,8 @@ impl Options {
         }
     }
 
-    /// Updates ignore case option. **option** is restricted to
-    /// "-i", "-y", "--ignore-case", and "--no-ignore-case".
+    /// Updates `ignore_case` option. Has no effect when `option` isn't one of
+    /// `-i`, `-y`, `--ignore-case`, and `--no-ignore-case`.
     fn handle_ignore_case(&mut self, option: &str) {
         match option {
             "-i" | "-y" | "--ignore-case" => {
@@ -142,11 +166,13 @@ impl Options {
         }
     }
 
-    /// Attempts to split option argument at "=" and return the option and value.
-    /// Otherwise, returns option argument and an empty value string.
+    /// Attempts to split an option argument that is associated with a
+    /// and return the option and value. Otherwise, returns option
+    /// argument and an empty value string.
     fn split_option<'a>(arg: &'a String) -> (&'a str, &'a str) {
-        let split_arg = arg.split_once("=");
+        let split_arg: Option<(&str, &str)> = arg.split_once("=");
         if let Some((option, value)) = split_arg {
+            // checks for "=" delimited values
             (option, value)
         }
         else if !arg.starts_with("--") && arg.len() > 2 {

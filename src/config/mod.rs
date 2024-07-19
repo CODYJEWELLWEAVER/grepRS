@@ -8,10 +8,12 @@ use regex::Regex;
 use options::Options;
 use source::Source;
 
-/// Represents information about current search parameters.
+/// #### Represents current execution parameters.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Config {
+    /// Sources to search for matches inside. See [Source] for more.
     pub sources: Vec<Source>,
+    /// Settings to be used during the current execution. See [Options] for more.
     pub options: Options,
 }
 
@@ -43,8 +45,8 @@ impl Config {
 
     /// Associates option arguments with their respective values and separates
     /// source candidates from option arguments.
-    /// Returns a tuple with source args in the first vector
-    /// and option args in the second.
+    /// Returns a tuple with source arguments in the first vector
+    /// and option arguments in the second.
     fn preprocess_args(args: Vec<String>) -> Result<(Vec<String>, Vec<String>), Box<dyn Error>> {
         let mut source_candidates = Vec::new();
         let mut options = Vec::new();

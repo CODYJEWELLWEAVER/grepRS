@@ -1,7 +1,6 @@
-use greprs::run;
-
 extern crate greprs;
 
+use greprs::run;
 use std::env;
 use std::process;
 use std::io::{Write, stderr};
