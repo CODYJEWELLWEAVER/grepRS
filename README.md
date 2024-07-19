@@ -1,5 +1,7 @@
 # GrepRS
 
+[![Rust](https://github.com/CODYJEWELLWEAVER/grepRS/actions/workflows/rust.yml/badge.svg)](https://github.com/CODYJEWELLWEAVER/grepRS/actions/workflows/rust.yml) [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/)
+
 ## DESCRIPTION
 
 An implementation of _grep_ in Rust. This project was inspired by the mini project in "The Rust Book".
