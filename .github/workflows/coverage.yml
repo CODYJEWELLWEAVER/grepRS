@@ -1,5 +1,8 @@
 name: coverage
 
+env:
+  COLORTERM: truecolor
+
 on: [push]
 jobs:
   test:
