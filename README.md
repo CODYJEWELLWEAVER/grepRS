@@ -1,6 +1,6 @@
 # GrepRS
 
-[![Rust](https://github.com/CODYJEWELLWEAVER/grepRS/actions/workflows/rust.yml/badge.svg)](https://github.com/CODYJEWELLWEAVER/grepRS/actions/workflows/rust.yml) 
+[![Rust](https://github.com/CODYJEWELLWEAVER/grepRS/actions/workflows/rust.yml/badge.svg)](https://github.com/CODYJEWELLWEAVER/grepRS/actions/workflows/rust.yml)
 [![codecov](https://codecov.io/github/CODYJEWELLWEAVER/grepRS/graph/badge.svg?token=2ZH77PI5IH)](https://codecov.io/github/CODYJEWELLWEAVER/grepRS)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/)
 
