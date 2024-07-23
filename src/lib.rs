@@ -25,7 +25,7 @@
 //! greprs [options...] pattern [sources...]
 //! ```
 //!
-//! A source is a file or stream such as stdin.
+//! Currently, a source can be either text file or stdin.
 //!
 //! There are no restrictions on where options must be given in the command.
 //!
@@ -97,11 +97,11 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
             &source.data
         );
 
-        output_buffer.write_to_buffer(&config.options, &source, matches);
+        output_buffer.append_source_results(&config.options, &source, matches);
 
         // print source separator
         if source.path != last_source.path {
-            output_buffer.write_separator();
+            output_buffer.append_separator();
         }
     }
 

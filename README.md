@@ -13,7 +13,7 @@ goes to Ken Thompson & AT&T Bell Laboratories. This project is licensed under GP
 I have made it a point of emphasis to keep the usage of grepRS identical to the usage of _grep_ so far.
 My hope is to allow for grepRS to be used without having to learn anything new.
 
-As of right now only unix is fully supported and this project may not completely run on macOS or Windows. However,
+As of right now only unix is fully supported and this project may not be fully functional on macOS or Windows. However,
 I fully plan to support both in the future. I am still in the early stages of development with only the most basic
 functionality implemented. Searching basic patterns in text files is fully functional and tested. Other functionality
 has not been thoroughly tested at this point but should largely work. Color output, advanced output

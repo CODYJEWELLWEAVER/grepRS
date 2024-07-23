@@ -7,19 +7,14 @@ fn default() {
     let default_options = Options::default();
     let expected_options = Options {
         patterns: Vec::new(),
-        color_output: true, // ignored for testing purposes
+        color_output: true, // rust.yml sets COLORTERM=truecolor, if testing locally make sure to set.
         file_prefix: false,
         ignore_case: false,
         invert_match: false,
         line_match: false,
         word_match: false,
     };
-    assert_eq!(default_options.patterns, expected_options.patterns);
-    assert_eq!(default_options.file_prefix, expected_options.file_prefix);
-    assert_eq!(default_options.ignore_case, expected_options.ignore_case);
-    assert_eq!(default_options.invert_match, expected_options.invert_match);
-    assert_eq!(default_options.line_match, expected_options.line_match);
-    assert_eq!(default_options.word_match, expected_options.word_match);
+    assert_eq!(default_options, expected_options);
 }
 
 #[test]

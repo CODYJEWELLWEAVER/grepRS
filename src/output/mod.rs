@@ -4,7 +4,7 @@ use crate::options;
 use source::Source;
 use options::Options;
 use regex::Matches;
-use std::iter::zip;
+use std::iter::{zip, Peekable};
 use std::io::{stdout, Write};
 
 /// Default output buffer size.
@@ -30,7 +30,7 @@ impl OutputBuffer {
 
     /// Writes results of search on a [Source] to the
     /// internal output buffer.
-    pub fn write_to_buffer(
+    pub fn append_source_results(
         &mut self,
         options: &Options,
         source: &Source,
@@ -43,10 +43,16 @@ impl OutputBuffer {
             let mut matches = matches.peekable();
 
             if matches.peek().is_some() && !options.invert_match {
-                self.write_line(options, source, line);
+                let line = if options.color_output {
+                    Self::apply_match_color(line, &mut matches)
+                } else {
+                    String::from(line)
+                };
+
+                self.append_line(options, &source.path, &line);
             }
             else if matches.peek().is_none() && options.invert_match {
-                self.write_line(options, source, line);
+                self.append_line(options, &source.path, line);
             }
         }
 
@@ -56,7 +62,7 @@ impl OutputBuffer {
     }
 
     /// Writes newline to buffer to separate source results.
-    pub fn write_separator(&mut self) {
+    pub fn append_separator(&mut self) {
         self.buffer.push('\n');
 
         if self.buffer.len() >= BUFFER_SIZE {
@@ -70,7 +76,7 @@ impl OutputBuffer {
             self.destination,
             "{}",
             self.buffer
-        ).expect("grepRS: Could not write to stdout!");
+        ).expect("grepRS: Could not write to destination!");
 
         self.destination.flush()
             .expect("grepRS: Could not flush buffer!");
@@ -80,16 +86,9 @@ impl OutputBuffer {
 
     /// Writes a single line to buffer. If `line` doesn't end
     /// with a newline char a newline will be added to the buffer.
-    fn write_line(&mut self, options: &Options, source: &Source, line: &str) {
+    fn append_line(&mut self, options: &Options, path: &str, line: &str) {
         if options.file_prefix {
-            let path = if &source.path != "-" {
-                &source.path
-            } else {
-                "(standard input)"
-            };
-
-            let prefix = String::from(path) + ":\t";
-            self.buffer.push_str(prefix.as_str());
+            self.append_file_prefix(path, options.color_output)
         }
 
         self.buffer.push_str(line);
@@ -97,5 +96,46 @@ impl OutputBuffer {
         if !self.buffer.ends_with("\n") {
             self.buffer.push_str("\n");
         }
+    }
+
+    /// Adds a file prefix to output buffer for current line.
+    fn append_file_prefix(&mut self, path: &str, color: bool) {
+        let path = if path != "-" {
+            path
+        } else {
+            "(standard input)"
+        };
+
+        let mut prefix = String::from(path) + ":\t";
+
+        if color {
+            prefix = String::from("\x1b[38;5;3m") + &prefix + "\x1b[39;49m"
+        }
+
+        self.buffer.push_str(prefix.as_str());
+    }
+
+    /// Applies color to matches inside a line. Only supports default color currently.
+    fn apply_match_color(line: &str, matches: &mut Peekable<Matches>) -> String {
+        let mut colored_line = String::new();
+
+        let mut previous = 0;
+        while let Some(match_obj) = matches.next() {
+            let start = match_obj.start();
+            let end = match_obj.end();
+
+            colored_line.push_str(&line[previous..start]);
+            colored_line.push_str("\x1b[38;5;3m");
+            colored_line.push_str(&line[start..end]);
+            colored_line.push_str("\x1b[39;49m");
+
+            previous = end;
+        }
+
+        if line.len() != previous {
+            colored_line.push_str(&line[previous..]);
+        }
+
+        colored_line
     }
 }
