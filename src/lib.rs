@@ -12,10 +12,12 @@
 //!
 //! As of right now only unix is fully supported and this project may not completely run on macOS or Windows. However,
 //! I fully plan to support both in the future. I am still in the early stages of development with only the most basic
-//! functionality implemented. Searching basic patterns in text files is fully functional and tested. Other functionality
-//! has not been thoroughly tested at this point but should largely work. Color output, advanced output
+//! functionality implemented. Searching basic patterns in text files is fully functional and tested. Color output, advanced output
 //! options, and support for searching additional formats is on my radar next. Color output and thorough testing
 //! of complex usage are next on my todo list.
+//!
+//! Note: The rust lang regex package does not support look-around. I plan on implementing look-around eventually, but
+//! this will be far in the future. Currently, look-around patterns will not work.
 //!
 //! ## BASIC USAGE
 //!

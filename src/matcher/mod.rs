@@ -12,7 +12,7 @@ pub fn build_regex(options: &Options) -> Result<Regex, Box<dyn Error>> {
     let patterns = build_pattern(options);
     let flags = build_flags(options);
 
-    let regex_string = format!(r"{}{}", patterns, flags);
+    let regex_string = format!(r"{}{}", flags, patterns);
 
     let regex = Regex::new(regex_string.as_str())?;
 

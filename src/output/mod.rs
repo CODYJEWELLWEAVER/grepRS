@@ -42,6 +42,7 @@ impl OutputBuffer {
         for (line, matches) in line_matches {
             let mut matches = matches.peekable();
 
+            // non-inverted matching
             if matches.peek().is_some() && !options.invert_match {
                 let line = if options.color_output {
                     Self::apply_match_color(line, &mut matches)
@@ -51,7 +52,8 @@ impl OutputBuffer {
 
                 self.append_line(options, &source.path, &line);
             }
-            else if matches.peek().is_none() && options.invert_match {
+            // inverted matching
+            else if matches.peek().is_none() && options.invert_match && line != "" {
                 self.append_line(options, &source.path, line);
             }
         }
