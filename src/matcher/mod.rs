@@ -9,10 +9,10 @@ use std::error::Error;
 
 /// Constructs regular expression from options.
 pub fn build_regex(options: &Options) -> Result<Regex, Box<dyn Error>> {
-    let patterns = build_pattern(options);
+    let pattern = build_pattern_string(options);
     let flags = build_flags(options);
 
-    let regex_string = format!(r"{}{}", flags, patterns);
+    let regex_string = format!(r"{}{}", flags, pattern);
 
     let regex = Regex::new(regex_string.as_str())?;
 
@@ -32,7 +32,7 @@ pub fn search_lines<'a>(regex: &'a Regex, content: &'a String) -> Vec<Matches<'a
 }
 
 /// Combines patterns into a single regex
-fn build_pattern(options: &Options) -> String {
+fn build_pattern_string(options: &Options) -> String {
     let mut patterns = if options.line_match {
         apply_line_matching(&options.patterns)
     }
@@ -63,7 +63,7 @@ fn build_flags(options: &Options) -> String {
 
 /// Maps patterns to new patterns that only match entire lines.
 fn apply_line_matching(patterns: &Vec<String>) -> Vec<String> {
-    patterns.clone()
+    patterns
         .into_iter()
         .map(|pattern| {
             String::from("^(") + &pattern + ")$"
