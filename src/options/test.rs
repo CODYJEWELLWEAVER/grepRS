@@ -136,3 +136,16 @@ fn parse_line_match() {
     options.parse_option(arg);
     assert_eq!(options.line_match, true);
 }
+
+#[test]
+fn parse_word_match() {
+    let arg = String::from("-w");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.word_match, true);
+
+    let arg = String::from("--word-regexp");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.word_match, true);
+}

@@ -1,8 +1,6 @@
 #[allow(unused_imports)]
 use super::Config;
 
-// TODO: Refactor to integration tests.
-
 #[test]
 fn single_pattern_and_file() {
     let args = vec!(String::from("./target"), String::from("dew"), String::from("res/test/haiku.txt"));
@@ -71,4 +69,29 @@ fn single_pattern_no_space() {
     let config = Config::new(args).unwrap();
     assert_eq!(config.sources.len(), 1);
     assert_eq!(config.options.patterns, vec!(String::from("dew")));
+}
+
+#[test]
+fn multiple_source_file_prefix() {
+    let args = vec!(
+        String::from("./target"),
+        String::from("pattern"),
+        String::from("file1"),
+        String::from("file2"),
+    );
+    let config = Config::new(args).unwrap();
+    assert_eq!(config.sources.len(), 2);
+    assert_eq!(config.options.file_prefix, true);
+
+    // disable file prefix
+    let args = vec!(
+        String::from("./target"),
+        String::from("--no-filename"),
+        String::from("pattern"),
+        String::from("file1"),
+        String::from("file2"),
+    );
+    let config = Config::new(args).unwrap();
+    assert_eq!(config.sources.len(), 2);
+    assert_eq!(config.options.file_prefix, false);
 }
