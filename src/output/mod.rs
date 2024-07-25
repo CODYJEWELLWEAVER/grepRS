@@ -1,3 +1,5 @@
+mod test;
+
 use crate::source;
 use crate::options;
 
@@ -11,17 +13,17 @@ use std::io::{stdout, Write};
 const BUFFER_SIZE: usize = 4096;
 
 /// Contains methods for buffering and writing output.
-pub struct OutputBuffer {
+pub struct OutputBuffer<'a>{
     /// Internal buffer for output content.
     buffer: String,
     /// A writable destination for content to be written to.
-    destination: Box<dyn Write>,
+    destination: Box<dyn Write + 'a>,
 }
 
-impl OutputBuffer {
+impl <'a>OutputBuffer<'_> {
     /// Creates new instance of OutputBuffer with default
     /// buffer size and stdout as destination.
-    pub fn default() -> OutputBuffer {
+    pub fn default() -> OutputBuffer<'a> {
         OutputBuffer {
             buffer: String::with_capacity(BUFFER_SIZE),
             destination: Box::from(stdout()),
@@ -81,7 +83,7 @@ impl OutputBuffer {
         ).expect("grepRS: Could not write to destination!");
 
         self.destination.flush()
-            .expect("grepRS: Could not flush buffer!");
+            .expect("grepRS: Could not flush output buffer!");
 
         self.buffer = String::with_capacity(BUFFER_SIZE);
     }
