@@ -63,7 +63,7 @@ use output::OutputBuffer;
 use source::Source;
 use regex::{Regex, Matches};
 use std::error::Error;
-use std::io::{stderr, Write};
+use std::io::{stderr, Write, ErrorKind};
 
 /// Runs grepRS with command line arguments.
 /// #### Param:
@@ -83,13 +83,8 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     let last_source: &Source = &config.sources[last_source_idx].clone();
 
     for mut source in config.sources {
-        if let Err(msg) = source.read_data() {
-            writeln!(
-                &mut stderr(),
-                "{} {}",
-                "grepRS:",
-                msg
-            ).expect("Could not write to stderr.");
+        if let Err(io_err) = source.read_data() {
+            print_io_err_msg(io_err, &source.path);
 
             continue;
         };
@@ -110,4 +105,26 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     output_buffer.write_and_flush();
 
     return Ok(());
+}
+
+/// Prints a message to stderr explaining an IO error.
+fn print_io_err_msg(io_err: Box<std::io::Error>, path: &str) {
+    let err_msg = match io_err.kind() {
+        ErrorKind::NotFound => {
+            format!("{} not found!", path)
+        },
+        ErrorKind::PermissionDenied => {
+            format!("Insufficient permissions to read from {}", path)
+        },
+        _ => {
+            io_err.to_string()
+        }
+    };
+
+    writeln!(
+        stderr(),
+        "{} {}",
+        "grepRS:",
+        err_msg,
+    ).expect("grepRS: could not write to stderr!");
 }

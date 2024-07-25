@@ -10,3 +10,10 @@ fn load_source_content() {
     );
     assert_eq!(source.data, expected_content);
 }
+
+#[test]
+fn invalid_file() {
+    let mut source = Source::new(String::from("file"));
+    let read_result = source.read_data();
+    assert!(read_result.is_err());
+}
