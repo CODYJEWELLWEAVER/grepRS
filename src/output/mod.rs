@@ -68,10 +68,18 @@ impl OutputBuffer {
 
             self.append_line(options, &source.path, &line);
         }
+    }
 
-        if self.buffer.len() >= BUFFER_SIZE {
-            self.write_and_flush();
-        }
+    /// Appends results of matching line search to output buffer.
+    pub fn append_source_counts(
+        &mut self,
+        options: &Options,
+        source: &Source,
+        matching_lines: usize,
+    ) {
+        let line = format!("{}\n", matching_lines);
+
+        self.append_line(options, &source.path, &line);
     }
 
     /// Writes newline to buffer to separate source results.
@@ -108,6 +116,10 @@ impl OutputBuffer {
 
         if !self.buffer.ends_with("\n") {
             self.buffer.push_str("\n");
+        }
+
+        if self.buffer.len() >= BUFFER_SIZE {
+            self.write_and_flush();
         }
     }
 

@@ -15,6 +15,7 @@ fn default() {
         word_match: false,
         silent: false,
         no_messages: false,
+        count_lines: false,
     };
     assert_eq!(default_options, expected_options);
 }
@@ -184,4 +185,17 @@ fn parse_no_messages() {
     let mut options = Options::default();
     options.parse_option(arg);
     assert_eq!(options.no_messages, true);
+}
+
+#[test]
+fn parse_count_lines() {
+    let arg = String::from("-c");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.count_lines, true);
+
+    let arg = String::from("--count");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.count_lines, true);
 }

@@ -19,7 +19,7 @@ pub fn build_regex(options: &Options) -> Result<Regex, Box<dyn Error>> {
     Ok(regex)
 }
 
-/// Searches data of a source line by line.
+/// Searches data of a source line by line, returns matches.
 pub fn search_lines<'a>(regex: &'a Regex, data: &'a String) -> Vec<Matches<'a, 'a>> {
     let mut matches: Vec<Matches> = Vec::new();
 
@@ -29,6 +29,26 @@ pub fn search_lines<'a>(regex: &'a Regex, data: &'a String) -> Vec<Matches<'a, '
     }
 
     matches
+}
+
+/// Searches data of source and returns the number of matches found.
+pub fn count_matching_lines(regex: &Regex, data: &String, invert_match: bool) -> usize {
+    let mut matching_lines: usize = 0;
+
+    let lines = data.split("\n");
+    for line in lines {
+        let mut match_iter = regex.find_iter(&line);
+        let line_has_match = match_iter.next().is_some();
+
+        if line_has_match && !invert_match {
+            matching_lines += 1;
+        }
+        else if !line_has_match && invert_match {
+            matching_lines += 1;
+        }
+    }
+
+    matching_lines
 }
 
 /// Combines patterns into a single regex

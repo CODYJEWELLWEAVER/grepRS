@@ -87,3 +87,53 @@ fn invert_match() {
 
     assert_eq!(matched_line_nums, expected_matched_lines);
 }
+
+#[test]
+fn counting_search() {
+    use greprs::config::Config;
+    use greprs::matcher;
+    use regex::Regex;
+
+    let args = vec!(
+        String::from("./target"),
+        String::from("[da]"),
+        String::from("res/test/haiku.txt"),
+        String::from("--count")
+    );
+
+    let mut config: Config = Config::new(args).unwrap();
+
+    config.sources[0].read_data().unwrap();
+
+    let regex: Regex = matcher::build_regex(&config.options).unwrap();
+
+    let source_counts = matcher::count_matching_lines(
+        &regex,
+        &config.sources[0].data,
+        config.options.invert_match
+    );
+
+    assert_eq!(source_counts, 3);
+
+    let args = vec!(
+        String::from("./target"),
+        String::from("[da]"),
+        String::from("res/test/haiku.txt"),
+        String::from("--count"),
+        String::from("--invert-match")
+    );
+
+    let mut config: Config = Config::new(args).unwrap();
+
+    config.sources[0].read_data().unwrap();
+
+    let regex: Regex = matcher::build_regex(&config.options).unwrap();
+
+    let source_counts = matcher::count_matching_lines(
+        &regex,
+        &config.sources[0].data,
+        config.options.invert_match
+    );
+
+    assert_eq!(source_counts, 0);
+}

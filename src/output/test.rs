@@ -104,3 +104,21 @@ fn flush_buffer() {
     output_buffer.write_and_flush();
     assert_eq!(output_buffer.buffer, "");
 }
+
+#[test]
+fn appends_line_count_to_buffer() {
+    let matching_lines: usize = 10;
+    let mut output_buffer = OutputBuffer {
+        buffer: String::with_capacity(BUFFER_SIZE),
+        destination: Box::new(Vec::<u8>::new())
+    };
+
+    let test_source = Source {
+        path: String::new(),
+        data: String::new(),
+    };
+
+    output_buffer.append_source_counts(&Options::default(), &test_source, matching_lines);
+
+    assert_eq!(output_buffer.buffer, "10\n");
+}

@@ -93,12 +93,23 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
             continue;
         };
 
-        let matches: Vec<Matches> = matcher::search_lines(
-            &regex,
-            &source.data
-        );
+        if options.count_lines {
+            let source_counts: usize = matcher::count_matching_lines(
+                &regex,
+                &source.data,
+                options.invert_match
+            );
 
-        output_buffer.append_source_matches(options, &source, matches);
+            output_buffer.append_source_counts(options, &source, source_counts);
+        }
+        else {
+            let matches: Vec<Matches> = matcher::search_lines(
+                &regex,
+                &source.data
+            );
+
+            output_buffer.append_source_matches(options, &source, matches);
+        }
 
         // print source separator
         if source.path != last_source.path && !options.silent {

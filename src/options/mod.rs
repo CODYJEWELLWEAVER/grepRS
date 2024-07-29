@@ -34,6 +34,8 @@ pub struct Options {
     pub silent: bool,
     /// If `true`, don't write any error messages. Defaults to `false`.
     pub no_messages: bool,
+    /// If `true`, counts lines with matches, respects invert_match. Defaults to `false`.
+    pub count_lines: bool,
 }
 
 impl Options {
@@ -62,6 +64,7 @@ impl Options {
             word_match: false,
             silent: false,
             no_messages: false,
+            count_lines: false,
         }
     }
 
@@ -100,6 +103,9 @@ impl Options {
         }
         else if option == "-s" || option == "--no-messages" {
             self.no_messages = true;
+        }
+        else if option == "-c" || option == "--count" {
+            self.count_lines = true;
         }
         else {
             panic!("Invalid option: {}", option);
