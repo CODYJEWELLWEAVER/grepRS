@@ -60,7 +60,6 @@ pub mod output;
 
 use config::Config;
 use output::OutputBuffer;
-use source::Source;
 use regex::{Regex, Matches};
 use std::error::Error;
 use std::io::{stderr, Write, ErrorKind};
@@ -77,10 +76,6 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     let config: Config = Config::new(args)?;
     let regex: Regex = matcher::build_regex(&config.options)?;
     let mut output_buffer = OutputBuffer::default();
-
-    // used to detect when a source separator should be printed
-    let last_source_idx = config.sources.len() - 1;
-    let last_source: &Source = &config.sources[last_source_idx].clone();
 
     let options = &config.options;
 
@@ -109,11 +104,6 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
             );
 
             output_buffer.append_source_matches(options, &source, matches);
-        }
-
-        // print source separator
-        if source.path != last_source.path && !options.silent {
-            output_buffer.append_separator();
         }
     }
 

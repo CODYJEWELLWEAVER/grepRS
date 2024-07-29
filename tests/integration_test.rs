@@ -1,6 +1,11 @@
 #[test]
 fn run_is_ok() {
-    let args = vec!(String::from("./target"), String::from("dew"), String::from("res/test/haiku.txt"));
+    let args = vec!(
+        String::from("./target"),
+        String::from("dew"),
+        String::from("res/test/haiku.txt"),
+        String::from("-q")
+    );
     let result = greprs::run(args);
     assert!(result.is_ok());
 }

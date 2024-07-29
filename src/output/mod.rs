@@ -13,6 +13,8 @@ use std::io::{stdout, Write};
 const BUFFER_SIZE: usize = 4096;
 
 /// Contains methods for buffering and writing output.
+/// Due to the private nature of the struct fields testing
+/// methods can be found in output/test.rs.
 pub struct OutputBuffer{
     /// Internal buffer for output content.
     buffer: String,
@@ -43,30 +45,33 @@ impl OutputBuffer {
 
         for (line, matches) in line_matches {
             let mut matches = matches.peekable();
+            let has_match = matches.peek().is_some();
 
             // non-inverted matching
-            let line = if matches.peek().is_some() && !options.invert_match {
+            let line: Option<String> = if has_match && !options.invert_match {
                 if options.color_output {
-                    Self::apply_match_color(line, &mut matches)
+                    Some(Self::apply_match_color(line, &mut matches))
                 } else {
-                    String::from(line)
+                    Some(String::from(line))
                 }
             }
             // inverted matching
-            else if matches.peek().is_none() && options.invert_match && line != "" {
-                String::from(line)
+            else if !has_match && options.invert_match && line != "" {
+                Some(String::from(line))
             }
             else {
-                String::from("")
+                None
             };
 
             // exit immediately if matching line is found
             // and silent mode is on
-            if options.silent && line != "" {
+            if options.silent && line.is_some() {
                 std::process::exit(0);
             }
 
-            self.append_line(options, &source.path, &line);
+            if let Some(line) = line {
+                self.append_line(options, &source.path, &line);
+            }
         }
     }
 
@@ -80,15 +85,6 @@ impl OutputBuffer {
         let line = format!("{}\n", matching_lines);
 
         self.append_line(options, &source.path, &line);
-    }
-
-    /// Writes newline to buffer to separate source results.
-    pub fn append_separator(&mut self) {
-        self.buffer.push('\n');
-
-        if self.buffer.len() >= BUFFER_SIZE {
-            self.write_and_flush();
-        }
     }
 
     /// Writes buffer to destination and flushes.

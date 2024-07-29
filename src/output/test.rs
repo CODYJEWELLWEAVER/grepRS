@@ -1,9 +1,11 @@
 #![allow(unused_imports)]
-use std::process::Output;
+use regex::Regex;
 
-use crate::output;
+use crate::matcher;
 
 use super::*;
+
+/// To prevent output to standard output
 
 #[test]
 fn default_buffer_capacity() {
@@ -121,4 +123,29 @@ fn appends_line_count_to_buffer() {
     output_buffer.append_source_counts(&Options::default(), &test_source, matching_lines);
 
     assert_eq!(output_buffer.buffer, "10\n");
+}
+
+#[test]
+fn appends_source_matches_to_buffer() {
+    let mut source = Source::new(String::from("res/test/haiku.txt"));
+    let mut options = Options::default();
+    options.color_output = false;
+    options.patterns = vec!(String::from("dew"));
+
+    let regex: Regex = matcher::build_regex(&options).unwrap();
+
+    source.read_data().unwrap();
+
+    let source_matches = matcher::search_lines(&regex, &source.data);
+
+    let mut output_buffer = OutputBuffer {
+        buffer: String::with_capacity(BUFFER_SIZE),
+        destination: Box::new(Vec::<u8>::new())
+    };
+
+    output_buffer.append_source_matches(&options, &source, source_matches);
+
+    let expected_buffer = String::from("This world of dew,\nis a world of dew,\n");
+
+    assert_eq!(output_buffer.buffer, expected_buffer);
 }
