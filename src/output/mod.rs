@@ -146,7 +146,7 @@ impl OutputBuffer {
             let end = match_obj.end();
 
             colored_line.push_str(&line[previous..start]);
-            colored_line.push_str("\x1b[38;5;3m");
+            colored_line.push_str("\x1b[38;5;4m");
             colored_line.push_str(&line[start..end]);
             colored_line.push_str("\x1b[39;49m");
 
