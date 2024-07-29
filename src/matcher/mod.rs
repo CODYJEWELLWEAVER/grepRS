@@ -19,11 +19,11 @@ pub fn build_regex(options: &Options) -> Result<Regex, Box<dyn Error>> {
     Ok(regex)
 }
 
-/// Searches content of a source line by line.
-pub fn search_lines<'a>(regex: &'a Regex, content: &'a String) -> Vec<Matches<'a, 'a>> {
+/// Searches data of a source line by line.
+pub fn search_lines<'a>(regex: &'a Regex, data: &'a String) -> Vec<Matches<'a, 'a>> {
     let mut matches: Vec<Matches> = Vec::new();
 
-    let lines = content.split("\n");
+    let lines = data.split("\n");
     for line in lines {
         matches.push(regex.find_iter(&line));
     }

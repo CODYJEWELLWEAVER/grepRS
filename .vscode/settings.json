@@ -5,6 +5,7 @@
         "consts",
         "greprs",
         "peekable",
-        "preprocess"
+        "preprocess",
+        "truecolor"
     ]
 }

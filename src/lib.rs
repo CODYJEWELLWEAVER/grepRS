@@ -82,9 +82,13 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     let last_source_idx = config.sources.len() - 1;
     let last_source: &Source = &config.sources[last_source_idx].clone();
 
+    let options = &config.options;
+
     for mut source in config.sources {
         if let Err(io_err) = source.read_data() {
-            print_io_err_msg(io_err, &source.path);
+            if !options.no_messages {
+                print_io_err_msg(io_err, &source.path);
+            }
 
             continue;
         };
@@ -94,15 +98,17 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
             &source.data
         );
 
-        output_buffer.append_source_results(&config.options, &source, matches);
+        output_buffer.append_source_matches(options, &source, matches);
 
         // print source separator
-        if source.path != last_source.path {
+        if source.path != last_source.path && !options.silent {
             output_buffer.append_separator();
         }
     }
 
-    output_buffer.write_and_flush();
+    if !options.silent {
+        output_buffer.write_and_flush();
+    }
 
     return Ok(());
 }

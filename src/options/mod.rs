@@ -30,6 +30,10 @@ pub struct Options {
     pub line_match: bool,
     /// If `true`, a pattern can only match areas surrounded by non-word bytes. Defaults to `false`.
     pub word_match: bool,
+    /// If `true`, don't write any output to stdout. Defaults to `false`.
+    pub silent: bool,
+    /// If `true`, don't write any error messages. Defaults to `false`.
+    pub no_messages: bool,
 }
 
 impl Options {
@@ -43,6 +47,8 @@ impl Options {
     ///     invert_match: false,
     ///     line_match: false,
     ///     word_match: false,
+    ///     silent: false,
+    ///     no_messages: false,
     /// }
     /// ```
     pub fn default() -> Options {
@@ -54,6 +60,8 @@ impl Options {
             invert_match: false,
             line_match: false,
             word_match: false,
+            silent: false,
+            no_messages: false,
         }
     }
 
@@ -84,6 +92,14 @@ impl Options {
         }
         else if option == "-w" || option == "--word-regexp" {
             self.word_match = true;
+        }
+        else if option == "-q" || option == "--quiet" || option == "--silent" {
+            self.silent = true;
+            // set no error messages if silent option is passed
+            self.no_messages = true;
+        }
+        else if option == "-s" || option == "--no-messages" {
+            self.no_messages = true;
         }
         else {
             panic!("Invalid option: {}", option);

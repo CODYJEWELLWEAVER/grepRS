@@ -13,6 +13,8 @@ fn default() {
         invert_match: false,
         line_match: false,
         word_match: false,
+        silent: false,
+        no_messages: false,
     };
     assert_eq!(default_options, expected_options);
 }
@@ -148,4 +150,38 @@ fn parse_word_match() {
     let mut options = Options::default();
     options.parse_option(arg);
     assert_eq!(options.word_match, true);
+}
+
+#[test]
+fn parse_silent() {
+    let arg = String::from("-q");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.silent, true);
+    assert_eq!(options.no_messages, true);
+
+    let arg = String::from("--quiet");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.silent, true);
+    assert_eq!(options.no_messages, true);
+
+    let arg = String::from("--silent");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.silent, true);
+    assert_eq!(options.no_messages, true);
+}
+
+#[test]
+fn parse_no_messages() {
+    let arg = String::from("-s");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.no_messages, true);
+
+    let arg = String::from("--no-messages");
+    let mut options = Options::default();
+    options.parse_option(arg);
+    assert_eq!(options.no_messages, true);
 }

@@ -13,17 +13,17 @@ use std::io::{stdout, Write};
 const BUFFER_SIZE: usize = 4096;
 
 /// Contains methods for buffering and writing output.
-pub struct OutputBuffer<'a>{
+pub struct OutputBuffer{
     /// Internal buffer for output content.
     buffer: String,
     /// A writable destination for content to be written to.
-    destination: Box<dyn Write + 'a>,
+    destination: Box<dyn Write>,
 }
 
-impl <'a>OutputBuffer<'_> {
+impl OutputBuffer {
     /// Creates new instance of OutputBuffer with default
     /// buffer size and stdout as destination.
-    pub fn default() -> OutputBuffer<'a> {
+    pub fn default() -> OutputBuffer {
         OutputBuffer {
             buffer: String::with_capacity(BUFFER_SIZE),
             destination: Box::from(stdout()),
@@ -32,7 +32,7 @@ impl <'a>OutputBuffer<'_> {
 
     /// Writes results of search on a [Source] to the
     /// internal output buffer.
-    pub fn append_source_results(
+    pub fn append_source_matches(
         &mut self,
         options: &Options,
         source: &Source,
@@ -45,19 +45,28 @@ impl <'a>OutputBuffer<'_> {
             let mut matches = matches.peekable();
 
             // non-inverted matching
-            if matches.peek().is_some() && !options.invert_match {
-                let line = if options.color_output {
+            let line = if matches.peek().is_some() && !options.invert_match {
+                if options.color_output {
                     Self::apply_match_color(line, &mut matches)
                 } else {
                     String::from(line)
-                };
-
-                self.append_line(options, &source.path, &line);
+                }
             }
             // inverted matching
             else if matches.peek().is_none() && options.invert_match && line != "" {
-                self.append_line(options, &source.path, line);
+                String::from(line)
             }
+            else {
+                String::from("")
+            };
+
+            // exit immediately if matching line is found
+            // and silent mode is on
+            if options.silent && line != "" {
+                std::process::exit(0);
+            }
+
+            self.append_line(options, &source.path, &line);
         }
 
         if self.buffer.len() >= BUFFER_SIZE {

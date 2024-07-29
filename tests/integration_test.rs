@@ -6,7 +6,7 @@ fn run_is_ok() {
 }
 
 #[test]
-fn single_pattern_single_source() {
+fn config_source_setup() {
     use greprs::config::Config;
     use greprs::source::Source;
     use greprs::options::Options;
@@ -42,12 +42,48 @@ fn ignore_case() {
         &config.sources[0].data
     );
 
-    let mut num_matches = 0;
-    for mut match_obj in matches {
-        while let Some(_) = match_obj.next() {
-            num_matches += 1;
-        }
-    }
+    let num_matches = matches.len();
 
     assert_eq!(num_matches, 3);
+}
+
+#[test]
+fn invert_match() {
+    use greprs::config::Config;
+    use greprs::matcher;
+    use regex::Regex;
+
+    let args = vec!(
+        String::from("./target"),
+        String::from("[cgCG]"),
+        String::from("res/test/poem.txt"),
+        String::from("-v"),
+    );
+
+    let mut config: Config = Config::new(args).unwrap();
+
+    let regex: Regex = matcher::build_regex(&config.options).unwrap();
+
+    config.sources[0].read_data().unwrap();
+
+    let matches = matcher::search_lines(&regex, &config.sources[0].data);
+
+    let line_matches = config.sources[0].data.split("\n").zip(matches);
+
+    let mut matched_line_nums: Vec<i32> = vec!();
+
+    let mut line_num = 0;
+    for (line, matches) in line_matches {
+        let mut matches = matches.peekable();
+
+        if matches.peek().is_none() && line != "" {
+            matched_line_nums.push(line_num);
+        }
+
+        line_num += 1;
+    }
+
+    let expected_matched_lines = vec!(6, 27, 31);
+
+    assert_eq!(matched_line_nums, expected_matched_lines);
 }
