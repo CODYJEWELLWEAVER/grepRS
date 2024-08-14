@@ -11,10 +11,7 @@
 //! My hope is to allow for grepRS to be used without having to learn anything new.
 //!
 //! As of right now only unix is fully supported and this project may not completely run on macOS or Windows. However,
-//! I fully plan to support both in the future. I am still in the early stages of development with only the most basic
-//! functionality implemented. Searching basic patterns in text files is fully functional and tested. Color output, advanced output
-//! options, and support for searching additional formats is on my radar next. Color output and thorough testing
-//! of complex usage are next on my todo list.
+//! I fully plan to support both in the future.
 //!
 //! Note: The rust lang regex package does not support look-around. I plan on implementing look-around eventually, but
 //! this will be far in the future. Currently, look-around patterns will not work.
@@ -57,6 +54,8 @@ pub mod source;
 pub mod options;
 /// Handles buffering and writing output.
 pub mod output;
+/// Handles colors used for output highlights
+pub mod colors;
 
 use config::Config;
 use output::OutputBuffer;

@@ -8,6 +8,7 @@ fn default() {
     let expected_options = Options {
         patterns: Vec::new(),
         color_output: true, // rust.yml sets COLORTERM=truecolor, if testing locally make sure to set.
+        colors: Colors::get_colors(),
         file_prefix: false,
         ignore_case: false,
         invert_match: false,

@@ -13,8 +13,8 @@ use std::io::{stdout, Write};
 const BUFFER_SIZE: usize = 4096;
 
 /// Contains methods for buffering and writing output.
-/// Due to the private nature of the struct fields testing
-/// methods can be found in output/test.rs.
+/// Due to the private nature of the struct fields "integration"
+/// testing can be found in output/test.rs.
 pub struct OutputBuffer{
     /// Internal buffer for output content.
     buffer: String,
@@ -130,7 +130,7 @@ impl OutputBuffer {
         let mut prefix = String::from(path) + ":\t";
 
         if color {
-            prefix = String::from("\x1b[38;5;3m") + &prefix + "\x1b[39;49m"
+            prefix = String::from("\x1b[1;33m") + &prefix + "\x1b[0;39m"
         }
 
         self.buffer.push_str(prefix.as_str());
@@ -146,9 +146,9 @@ impl OutputBuffer {
             let end = match_obj.end();
 
             colored_line.push_str(&line[previous..start]);
-            colored_line.push_str("\x1b[38;5;4m");
+            colored_line.push_str("\x1b[1;33m");
             colored_line.push_str(&line[start..end]);
-            colored_line.push_str("\x1b[39;49m");
+            colored_line.push_str("\x1b[0;39m");
 
             previous = end;
         }

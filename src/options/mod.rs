@@ -1,11 +1,13 @@
 mod test;
 
 use crate::source;
+use crate::colors;
 
 use source::Source;
 use std::error::Error;
 use std::env::var_os;
 use std::io::{stderr, Write};
+use colors::Colors;
 
 /// #### Options for a run of GrepRS.
 ///
@@ -18,6 +20,9 @@ pub struct Options {
     /// If output should use color. Defaults to `true` if the current environment indicates
     /// color output support.
     pub color_output: bool,
+    /// Contains the colors that should be used for highlighting different aspects of output.
+    /// See the colors module for more information.
+    pub colors: Colors,
     /// If output should be prefixed with the path name.
     /// Uses `(standard input)` as a prefix for stdin.
     /// Defaults to `true` for multiple source executions, otherwise `false`.
@@ -44,6 +49,7 @@ impl Options {
     /// Options {
     ///     patterns: Vec::new(),
     ///     color_output: Self::supports_color(),
+    ///     colors: Colors::get_colors(),
     ///     file_prefix: false,
     ///     ignore_case: false,
     ///     invert_match: false,
@@ -51,12 +57,14 @@ impl Options {
     ///     word_match: false,
     ///     silent: false,
     ///     no_messages: false,
+    ///     count_lines: false,
     /// }
     /// ```
     pub fn default() -> Options {
         Options {
             patterns: Vec::new(),
             color_output: Self::supports_color(),
+            colors: Colors::get_colors(),
             file_prefix: false,
             ignore_case: false,
             invert_match: false,

@@ -37,7 +37,7 @@ fn append_file_prefix_to_buffer() {
     };
 
     output_buffer.append_file_prefix("file path", true);
-    assert_eq!(output_buffer.buffer, "\x1b[38;5;3mfile path:\t\x1b[39;49m");
+    assert_eq!(output_buffer.buffer, "\x1b[1;33mfile path:\t\x1b[0;39m");
 
     let mut output_buffer = OutputBuffer {
         buffer: String::with_capacity(BUFFER_SIZE),
@@ -45,7 +45,7 @@ fn append_file_prefix_to_buffer() {
     };
 
     output_buffer.append_file_prefix("-", true);
-    assert_eq!(output_buffer.buffer, "\x1b[38;5;3m(standard input):\t\x1b[39;49m");
+    assert_eq!(output_buffer.buffer, "\x1b[1;33m(standard input):\t\x1b[0;39m");
 }
 
 #[test]
@@ -78,7 +78,7 @@ fn append_line_to_buffer() {
     options.file_prefix = true;
 
     output_buffer.append_line(&options, "-", line);
-    assert_eq!(output_buffer.buffer, "\x1b[38;5;3m(standard input):\t\x1b[39;49moutput line\n");
+    assert_eq!(output_buffer.buffer, "\x1b[1;33m(standard input):\t\x1b[0;39moutput line\n");
 
     let line = "output line\n";
     let mut output_buffer = OutputBuffer {
