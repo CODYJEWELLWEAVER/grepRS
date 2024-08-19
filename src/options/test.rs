@@ -200,3 +200,30 @@ fn parse_count_lines() {
     options.parse_option(arg);
     assert_eq!(options.count_lines, true);
 }
+
+#[test]
+fn parse_color_output() {
+    let arg = String::from("--color=always");
+    let mut options = Options::default();
+    options.color_output = false;
+    options.parse_option(arg);
+    assert_eq!(options.color_output, true);
+
+    let arg = String::from("--color=never");
+    let mut options = Options::default();
+    options.color_output = true;
+    options.parse_option(arg);
+    assert_eq!(options.color_output, false);
+
+    let arg = String::from("--colour=always");
+    let mut options = Options::default();
+    options.color_output = false;
+    options.parse_option(arg);
+    assert_eq!(options.color_output, true);
+
+    let arg = String::from("--colour=never");
+    let mut options = Options::default();
+    options.color_output = true;
+    options.parse_option(arg);
+    assert_eq!(options.color_output, false);
+}

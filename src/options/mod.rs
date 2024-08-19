@@ -115,6 +115,9 @@ impl Options {
         else if option == "-c" || option == "--count" {
             self.count_lines = true;
         }
+        else if option == "--color" || option == "--colour" {
+            self.handle_color(value);
+        }
         else {
             panic!("Invalid option: {}", option);
         }
@@ -180,6 +183,14 @@ impl Options {
             _ => {
                 self.ignore_case = false;
             }
+        }
+    }
+
+    fn handle_color(&mut self, value: &str) {
+        match value {
+            "always" => self.color_output = true,
+            "never" => self.color_output = false,
+            _ => {},
         }
     }
 

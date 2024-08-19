@@ -89,11 +89,11 @@ impl Colors {
                     "bn" => colors.byte_offset = ansi_code,
                     "se" => colors.separator = ansi_code,
                     _ => {
-                        println!("GREPRS: Unknown color option: {}!", option[..2].to_string())
+                        println!("GREPRS: Unknown color option: {}!", option[..2].to_string());
                     },
                 }
             } else {
-                println!("GREPRS: Invalid color option format!")
+                println!("GREPRS: Invalid color option format!");
             }
         }
 
