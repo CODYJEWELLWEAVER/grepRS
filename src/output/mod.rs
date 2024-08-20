@@ -2,7 +2,9 @@ mod test;
 
 use crate::source;
 use crate::options;
+use crate::colors;
 
+use colors::Colors;
 use source::Source;
 use options::Options;
 use regex::Matches;
@@ -11,11 +13,14 @@ use std::io::{stdout, Write};
 
 /// Default output buffer size.
 const BUFFER_SIZE: usize = 4096;
+const ANSI_RESET: &'static str = "\x1b[0m";
+const ANSI_ESCAPE: &'static str = "\x1b[";
+const ANSI_END: &'static str = "m";
 
 /// Contains methods for buffering and writing output.
 /// Due to the private nature of the struct fields "integration"
 /// testing can be found in output/test.rs.
-pub struct OutputBuffer{
+pub struct OutputBuffer {
     /// Internal buffer for output content.
     buffer: String,
     /// A writable destination for content to be written to.
@@ -50,7 +55,7 @@ impl OutputBuffer {
             // non-inverted matching
             let line: Option<String> = if has_match && !options.invert_match {
                 if options.color_output {
-                    Some(Self::apply_match_color(line, &mut matches))
+                    Some(Self::apply_match_color(line, &mut matches, &options.colors))
                 } else {
                     Some(String::from(line))
                 }
@@ -70,7 +75,19 @@ impl OutputBuffer {
             }
 
             if let Some(line) = line {
-                self.append_line(options, &source.path, &line);
+                // apply selected line coloring
+                if &options.colors.selected_line != "" && options.color_output {
+                    self.append_line(
+                        options,
+                        &source.path,
+                        Self::apply_ansi_code(
+                            &line,
+                            &options.colors.selected_line
+                        ).as_str()
+                    );
+                } else {
+                    self.append_line(options, &source.path, &line);
+                }
             }
         }
     }
@@ -105,7 +122,8 @@ impl OutputBuffer {
     /// with a newline char a newline will be added to the buffer.
     fn append_line(&mut self, options: &Options, path: &str, line: &str) {
         if options.file_prefix {
-            self.append_file_prefix(path, options.color_output)
+            self.append_file_path(path, options.color_output, &options.colors);
+            self.append_separator(options.color_output, &options.colors);
         }
 
         self.buffer.push_str(line);
@@ -120,24 +138,27 @@ impl OutputBuffer {
     }
 
     /// Adds a file prefix to output buffer for current line.
-    fn append_file_prefix(&mut self, path: &str, color: bool) {
+    fn append_file_path(&mut self, path: &str, color: bool, colors: &Colors) {
         let path = if path != "-" {
             path
         } else {
             "(standard input)"
         };
 
-        let mut prefix = String::from(path) + ":\t";
+        let mut path = String::from(path);
 
         if color {
-            prefix = String::from("\x1b[1;33m") + &prefix + "\x1b[0;39m"
+            path = Self::apply_ansi_code(
+                &path,
+                &colors.file_name
+            );
         }
 
-        self.buffer.push_str(prefix.as_str());
+        self.buffer.push_str(path.as_str());
     }
 
     /// Applies color to matches inside a line. Only supports default color currently.
-    fn apply_match_color(line: &str, matches: &mut Peekable<Matches>) -> String {
+    fn apply_match_color(line: &str, matches: &mut Peekable<Matches>, colors: &Colors) -> String {
         let mut colored_line = String::new();
 
         let mut previous = 0;
@@ -146,9 +167,18 @@ impl OutputBuffer {
             let end = match_obj.end();
 
             colored_line.push_str(&line[previous..start]);
-            colored_line.push_str("\x1b[1;33m");
-            colored_line.push_str(&line[start..end]);
-            colored_line.push_str("\x1b[0;39m");
+            let colored_match = Self::apply_ansi_code(
+                &line[start..end],
+                &colors.selected_match
+            );
+            colored_line.push_str(colored_match.as_str());
+
+            if colors.selected_line != "" {
+                // apply selected line coloring on intermediate text
+                colored_line.push_str(
+                    (ANSI_ESCAPE.to_owned() + &colors.selected_line + ANSI_END).as_str()
+                );
+            }
 
             previous = end;
         }
@@ -158,5 +188,26 @@ impl OutputBuffer {
         }
 
         colored_line
+    }
+
+    /// Appends a separator to delimitate file names and content lines.
+    fn append_separator(&mut self, color: bool, colors: &Colors) {
+        let mut separator = String::from(":\t");
+
+        if color {
+            separator = Self::apply_ansi_code(&separator, &colors.separator);
+        }
+
+        self.buffer.push_str(&separator);
+    }
+
+    /// Applies an ANSI code to a given content string and returns
+    /// a handle to a heap allocated string.
+    fn apply_ansi_code(content: &str, ansi_code: &str) -> String {
+        ANSI_ESCAPE.to_owned()
+            + ansi_code
+            + ANSI_END
+            + content
+            + ANSI_RESET
     }
 }

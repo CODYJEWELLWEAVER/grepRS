@@ -88,6 +88,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
         };
 
         if options.count_lines {
+            // COUNT MATCHING LINES
             let source_counts: usize = matcher::count_matching_lines(
                 &regex,
                 &source.data,
@@ -97,6 +98,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
             output_buffer.append_source_counts(options, &source, source_counts);
         }
         else {
+            // SEARCH FOR MATCHES IN LINES
             let matches: Vec<Matches> = matcher::search_lines(
                 &regex,
                 &source.data

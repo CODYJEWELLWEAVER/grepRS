@@ -10,10 +10,10 @@ pub struct Colors {
     /// Defines the formatting of matching text in context lines. Defaults to bold yellow.
     pub context_match: String,
     /// Defines the formatting to be used for the entirety of selected lines.
-    /// Defaults to the device's defaults.
+    /// Defaults to the device's default formatting.
     pub selected_line: String,
     /// Defines the formatting to be used for the entirety of context lines.
-    /// Defaults to the device's defaults.
+    /// Defaults to the device's default formatting.
     pub context_line: String,
     /// Defines the formatting of file name prefixes. Defaults to green.
     pub file_name: String,
@@ -47,10 +47,10 @@ impl Colors {
     }
 
     /// Builds default GREPRS Colors struct.
-    fn default() -> Colors {
+    pub fn default() -> Colors {
         Colors {
-            selected_match: String::from("01;33"), // bold yellow
-            context_match: String::from("01:33"), // bold yellow
+            selected_match: String::from("1;33"), // bold yellow
+            context_match: String::from("1:33"), // bold yellow
             selected_line: String::from(""), // device default
             context_line: String::from(""), // device default
             file_name: String::from("32"), // green
@@ -88,12 +88,8 @@ impl Colors {
                     "ln" => colors.line_number = ansi_code,
                     "bn" => colors.byte_offset = ansi_code,
                     "se" => colors.separator = ansi_code,
-                    _ => {
-                        println!("GREPRS: Unknown color option: {}!", option[..2].to_string());
-                    },
+                    _ => {},
                 }
-            } else {
-                println!("GREPRS: Invalid color option format!");
             }
         }
 

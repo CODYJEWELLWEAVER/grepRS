@@ -5,8 +5,8 @@ use super::*;
 fn default_colors() {
     let default = Colors::default();
     let expected_default = Colors {
-        selected_match: String::from("01;33"),
-        context_match: String::from("01:33"),
+        selected_match: String::from("1;33"),
+        context_match: String::from("1:33"),
         selected_line: String::from(""),
         context_line: String::from(""),
         file_name: String::from("32"),

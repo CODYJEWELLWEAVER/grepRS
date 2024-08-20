@@ -20,32 +20,32 @@ fn append_file_prefix_to_buffer() {
         destination: Box::new(Vec::<u8>::new())
     };
 
-    output_buffer.append_file_prefix("file path", false);
-    assert_eq!(output_buffer.buffer, "file path:\t");
+    output_buffer.append_file_path("file path", false, &Colors::default());
+    assert_eq!(output_buffer.buffer, "file path");
 
     let mut output_buffer = OutputBuffer {
         buffer: String::with_capacity(BUFFER_SIZE),
         destination: Box::new(Vec::<u8>::new())
     };
 
-    output_buffer.append_file_prefix("-", false);
-    assert_eq!(output_buffer.buffer, "(standard input):\t");
+    output_buffer.append_file_path("-", false, &Colors::default());
+    assert_eq!(output_buffer.buffer, "(standard input)");
 
     let mut output_buffer = OutputBuffer {
         buffer: String::with_capacity(BUFFER_SIZE),
         destination: Box::new(Vec::<u8>::new())
     };
 
-    output_buffer.append_file_prefix("file path", true);
-    assert_eq!(output_buffer.buffer, "\x1b[1;33mfile path:\t\x1b[0;39m");
+    output_buffer.append_file_path("file path", true, &Colors::default());
+    assert_eq!(output_buffer.buffer, "\x1b[32mfile path\x1b[0m");
 
     let mut output_buffer = OutputBuffer {
         buffer: String::with_capacity(BUFFER_SIZE),
         destination: Box::new(Vec::<u8>::new())
     };
 
-    output_buffer.append_file_prefix("-", true);
-    assert_eq!(output_buffer.buffer, "\x1b[1;33m(standard input):\t\x1b[0;39m");
+    output_buffer.append_file_path("-", true, &Colors::default());
+    assert_eq!(output_buffer.buffer, "\x1b[32m(standard input)\x1b[0m");
 }
 
 #[test]
@@ -78,7 +78,7 @@ fn append_line_to_buffer() {
     options.file_prefix = true;
 
     output_buffer.append_line(&options, "-", line);
-    assert_eq!(output_buffer.buffer, "\x1b[1;33m(standard input):\t\x1b[0;39moutput line\n");
+    assert_eq!(output_buffer.buffer, "\u{1b}[32m(standard input)\u{1b}[0m\u{1b}[35m:\t\u{1b}[0moutput line\n");
 
     let line = "output line\n";
     let mut output_buffer = OutputBuffer {
@@ -129,7 +129,7 @@ fn appends_line_count_to_buffer() {
 fn appends_source_matches_to_buffer() {
     let mut source = Source::new(String::from("res/test/haiku.txt"));
     let mut options = Options::default();
-    options.color_output = false;
+    options.color_output = true;
     options.patterns = vec!(String::from("dew"));
 
     let regex: Regex = matcher::build_regex(&options).unwrap();
@@ -145,7 +145,7 @@ fn appends_source_matches_to_buffer() {
 
     output_buffer.append_source_matches(&options, &source, source_matches);
 
-    let expected_buffer = String::from("This world of dew,\nis a world of dew,\n");
+    let expected_buffer = String::from("This world of \x1b[1;33mdew\x1b[0m,\nis a world of \x1b[1;33mdew\x1b[0m,\n");
 
     assert_eq!(output_buffer.buffer, expected_buffer);
 }
